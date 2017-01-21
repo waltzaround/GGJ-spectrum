@@ -26,12 +26,12 @@ class Ball {
       y = 445;
       Collide(true);
     }
-    if (((5 < x) && (x < 25)) && ((paddleLeftPosition - 100 < y) && (y < paddleLeftPosition + 100))) {
+    if (((5 < x) && (x < 25)) && (((paddleLeftPosition * 2) - 100 < y) && (y < (paddleLeftPosition * 2) + 100))) {
       x = 25 + r; // fiddle with this to calibrate paddle bounce
       println("LEFT PADDLE BANG!");
       Collide(false);
       Angle(paddleLeftPosition);
-    } else if (((780 < x) && (x < 785)) && ((paddleRightPosition - 1000 < y) && (y < paddleRightPosition + 1000))) {
+    } else if (((780 < x) && (x < 785)) && ((paddleRightPosition - 100 < y) && (y < paddleRightPosition + 100))) {
       x = 710 - r;
       println("RIGHT PADDLE BANG!");
       Collide(false);
