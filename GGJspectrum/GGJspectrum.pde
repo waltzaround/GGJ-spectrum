@@ -34,7 +34,7 @@ ArrayList<Ball> balls = new ArrayList<Ball>();
 int status = 0;
 PFont titleFont;
 int waitTime;
-String numPlayers = "OVER 9000";
+int numPlayers = 0;
 int elapsedTime;
 boolean playerOneFound, playerTwoFound, starting;
 float titleX = width/2, titleY = -100;
@@ -67,7 +67,18 @@ void setup() {
 }
 
 void draw() {
-
+  
+  opencv.loadImage(video);
+  Rectangle[] faces = opencv.detect();
+  
+  
+  // Detect Players
+  
+  if (faces.length == 2){
+    playerOneFound = true;
+    playerTwoFound = true;
+    
+  }
 
   if (playerOneFound && playerTwoFound && !starting) {
     status = 1;
@@ -89,8 +100,7 @@ void draw() {
     textAlign(CENTER, CENTER);
     text("Welcome.", titleX, titleY);
 
-
-    //TESTING    
+ 
 
     waitTime++;
 
@@ -108,6 +118,7 @@ void draw() {
 
       textFont(titleFont);
       textSize(24);
+      numPlayers = faces.length;
 
       text(numPlayers + " of 2 people found", faceFoundTextX, faceFoundTextY);
       starting = false;
@@ -117,28 +128,44 @@ void draw() {
 
     break;
   case 1: 
-
+  
+numPlayers = faces.length;
     if (beginGameTimer == true) {
       background(0, 0, 0);
       elapsedTime = 0;
+     
     }
     beginGameTimer = false;
     // countdown from 3.. 2.. 1..
 
     elapsedTime++;
 
-
+if (elapsedTime < 100){
+  textSize(64);
+  text("Get Ready!", width/2, height/2);
+  textSize(24);
+  text("Move your head to control the paddle", width/2, height/2 - 200);
+  
+}
     if (elapsedTime == 100) {
       background(0, 0, 0);
       textSize(32);
-
+textSize(64);
       text("3", width/2, height/2);
+      textSize(24);
+      text("Move your head to control the paddle", width/2, height/2 - 200);
     } else if (elapsedTime == 200) {
       background(0, 0, 0);
+      textSize(64);
       text("2", width/2, height/2);
+      textSize(24);
+      text("Move your head to control the paddle", width/2, height/2 - 200);
     } else if (elapsedTime == 300) {
       background(0, 0, 0);
+      textSize(64);
       text("1", width/2, height/2);
+      textSize(24);
+      text("Move your head to control the paddle", width/2, height/2 - 200);
     } else if (elapsedTime == 400) {
       starting = true;
     }
@@ -166,13 +193,13 @@ void draw() {
     scale(2);
     rectMode(CENTER);
     background(0, 0, 0);
-    opencv.loadImage(video);
+    
     //image(video, 0, 0 ); // draw the video - we will remove this after testing
     //noFill();
     //stroke(0, 255, 0);
     //strokeWeight(3);
     color(0, 0, 0);
-    Rectangle[] faces = opencv.detect();
+    
     //println(faces.length);
 
     for (int i = 0; i < faces.length; i++) { // for every face on screen...
