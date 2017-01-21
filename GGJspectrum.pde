@@ -3,6 +3,7 @@ SUP DOGE!
 This is a global game jam 2017 game!
 More dox coming soon :D
 @authors Walter Lim, Sam Hunt
+Special thanks to Patrick Tuohy
 */
 
 import gab.opencv.*;
@@ -36,7 +37,7 @@ void setup() {
   // end video stuff
   
   //begin game initialization and other crap - SPAWN THE BALLS!!
-  ball = new Ball (400, 300, 2); // x, y, speed values - we need to define ball !
+  ball = new Ball (400, 300, 10); // x, y, speed values - we need to define ball !
   
   
   
@@ -46,6 +47,7 @@ void draw() {
   
   // begin video processing parts
   scale(2);
+  rectMode(CENTER);
   background(0,0,0);
   opencv.loadImage(video);
   //image(video, 0, 0 ); // draw the video - we will remove this after testing
@@ -54,18 +56,20 @@ void draw() {
   //strokeWeight(3);
   color(0,0,0);
   Rectangle[] faces = opencv.detect();
-  println(faces.length);
+  //println(faces.length);
 
   for (int i = 0; i < faces.length; i++) { // for every face on screen...
-    println(faces[i].x + "," + faces[i].y);
+  //  println(faces[i].x + "," + faces[i].y);
     //rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
   } // end
    if (faces.length == 2) {
   fill(color(255));
-  rect(30, (faces[0].y * 2), 10, 100); // draw
-  rect(720, (faces[1].y * 2), 10, 100); // draw
+  rect(15, (faces[0].y * 2), 10, 100); // draw
+  rect(780, (faces[1].y * 2), 10, 100); // draw
   paddleLeftPosition = faces[0].y;
   paddleRightPosition = faces[1].y;
+  //println("left paddle position is " + faces[0].y);
+  //println("ball position is " + ball.x , ball.y);
   }
   
     ball.update(); // update pos
@@ -106,9 +110,14 @@ void Score(int i) {
   ball.x = 400;
   ball.y = 300;
   ball.d = ball.startDirection();
+
 }
 
 
 void captureEvent(Capture c) {
   c.read();
+}
+
+void mouseClicked() {
+  println("mouse: " + mouseX, mouseY);
 }

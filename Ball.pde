@@ -18,24 +18,24 @@ class Ball {
     x += (s + boost)*sin(d); //Updates point by speed (0.25?), defined by d (direction) using a conversion to radians (sin & cos).
     y += (s + boost)*cos(d);
     //Bounces ball off top and bottom lines
-    if ((y - r) <= 45) { //extra brackets necessary?
-      y = 55;
+    if ((y - r) <= 0) { //extra brackets necessary?
+      y = 5;
       Collide(true);
-    } else if ((y + r) >= 555) {
-      y = 545;
+    } else if ((y + r) >= 450) {
+      y = 445;
       Collide(true);
     }
-    if (((10 < x) && (x < 20)) && ((paddleLeftPosition - 50 < y) && (y < paddleLeftPosition + 50))) {
-      x = 41 + r; // fiddle with this to calibrate paddle bounce
-      Collide(false);
-      Angle(paddleRightPosition);
-    } else if (((1590 < x) && (x < 1580)) && ((paddleRightPosition - 50 < y) && (y < paddleRightPosition + 50))) {
-      x = 644 - r;
+    if (((5 < x) && (x < 25)) && ((paddleLeftPosition - 100 < y) && (y < paddleLeftPosition + 100))) {
+      x = 25 + r; // fiddle with this to calibrate paddle bounce
       Collide(false);
       Angle(paddleLeftPosition);
-    } else if (805 < x) {
+    } else if (((710 < x) && (x < 730)) && ((paddleRightPosition - 100 < y) && (y < paddleRightPosition + 100))) {
+      x = 710 - r;
+      Collide(false);
+      Angle(paddleRightPosition);
+    } else if (800 < x) {
       Score(0);
-    } else if (x < -5) {
+    } else if (x < 0) {
       Score(1);
     }
 
@@ -66,7 +66,7 @@ class Ball {
     if ((i + 5 < y) && (y < i + 30)) {
       boost += 1.5;
       boostTimer = millis();
-      println("boost");
+      //println("boost");
     }
     d += (y - (i + 17.5))/66.845;
     if (((9*PI/10) < d) && (x < 400)) {
