@@ -19,19 +19,21 @@ class Ball {
     x += (s + boost)*sin(d); //Updates point by speed (0.25?), defined by d (direction) using a conversion to radians (sin & cos).
     y += (s + boost)*cos(d);
     //Bounces ball off top and bottom lines
-    if ((y - r) <= 0) { //extra brackets necessary?
+    if ((y - r) <= 0) { //top border bounce
       y = 5;
       Collide(true);
-    } else if ((y + r) >= 450) {
+    } else if ((y + r) >= 450) { // bottom border bounce
       y = 445;
       Collide(true);
     }
     if (((5 < x) && (x < 25)) && ((paddleLeftPosition - 100 < y) && (y < paddleLeftPosition + 100))) {
       x = 25 + r; // fiddle with this to calibrate paddle bounce
+      println("LEFT PADDLE BANG!");
       Collide(false);
       Angle(paddleLeftPosition);
-    } else if (((710 < x) && (x < 730)) && ((paddleRightPosition - 100 < y) && (y < paddleRightPosition + 100))) {
+    } else if (((780 < x) && (x < 785)) && ((paddleRightPosition - 1000 < y) && (y < paddleRightPosition + 1000))) {
       x = 710 - r;
+      println("RIGHT PADDLE BANG!");
       Collide(false);
       Angle(paddleRightPosition);
     } else if (800 < x) {
@@ -52,8 +54,8 @@ class Ball {
     //ellipseMode(RADIUS);
     //ellipse(x, y, r, r);
     rectMode(RADIUS);
-    rect(x, y, r, r);
-    rectMode(CORNER);
+    rect(x, y, r, r); // shit gets d
+    //rectMode(CORNER);
   }
   void Collide(boolean c) { //deals with collision.
     if (c == true) {

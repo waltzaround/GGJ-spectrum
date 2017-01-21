@@ -66,6 +66,8 @@ void draw() {
     rect(780, (faces[1].y * 2), 10, 100); // draw
     paddleLeftPosition = faces[0].y;
     paddleRightPosition = faces[1].y;
+      println("leftpaddleposition is" + paddleLeftPosition );
+  println("rightpaddleposition is" + paddleLeftPosition );
     //println("left paddle position is " + faces[0].y);
     //println("ball position is " + ball.x , ball.y);
   }
@@ -126,4 +128,5 @@ void captureEvent(Capture c) {
 
 void mouseClicked() {
   println("mouse: " + mouseX, mouseY);
+
 }
