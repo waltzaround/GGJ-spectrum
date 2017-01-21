@@ -1,14 +1,13 @@
 import de.looksgood.ani.*;
 import de.looksgood.ani.easing.*;
 
-
 int status = 1;
 PFont titleFont;
 int waitTime;
 
 String numPlayers = "OVER 9000";
 
-int elaspsedTime;
+int elapsedTime;
 
 boolean playerOneFound, playerTwoFound, starting;
 
@@ -18,7 +17,7 @@ float subX = 800, subY = 1000;
 float faceFoundTextX = 800, faceFoundTextY = 450;
 float countDownY = 400;
 
-int startTime, elapsedTimeYes;
+int startTime;
 boolean beginGameTimer;
 
 boolean startingCd;
@@ -94,30 +93,30 @@ void draw() {
 
     if (beginGameTimer == true) {
       background(0, 0, 0);
-      elapsedTimeYes = 0;
+      elapsedTime = 0;
       
 
     }
     beginGameTimer = false;
     // countdown from 3.. 2.. 1..
 
-    elapsedTimeYes++;
+    elapsedTime++;
     
    
-    if (elapsedTimeYes == 100) {
+    if (elapsedTime == 100) {
       background(0, 0, 0);
       textSize(32);
       
       text("3", width/2, height/2);
       
-    } else if (elapsedTimeYes == 200) {
+    } else if (elapsedTime == 200) {
       background(0, 0, 0);
       text("2", width/2, height/2);
-    } else if (elapsedTimeYes == 300) {
+    } else if (elapsedTime == 300) {
       background(0, 0, 0);
       text("1", width/2, height/2);
       
-    } else if (elapsedTimeYes == 400) {
+    } else if (elapsedTime == 400) {
      starting = true; 
     }
 
