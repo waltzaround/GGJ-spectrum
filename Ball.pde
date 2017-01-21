@@ -25,11 +25,11 @@ class Ball {
       y = 545;
       Collide(true);
     }
-    if (((115 < x) && (x < 125)) && ((paddleLeftPosition - 35 < y) && (y < paddleLeftPosition + 35))) {
-      x = 126 + r;
+    if (((10 < x) && (x < 20)) && ((paddleLeftPosition - 50 < y) && (y < paddleLeftPosition + 50))) {
+      x = 41 + r; // fiddle with this to calibrate paddle bounce
       Collide(false);
       Angle(paddleRightPosition);
-    } else if (((645 < x) && (x < 655)) && ((paddleRightPosition - 35 < y) && (y < paddleRightPosition + 35))) {
+    } else if (((1590 < x) && (x < 1580)) && ((paddleRightPosition - 50 < y) && (y < paddleRightPosition + 50))) {
       x = 644 - r;
       Collide(false);
       Angle(paddleLeftPosition);

@@ -48,7 +48,7 @@ void draw() {
   scale(2);
   background(0,0,0);
   opencv.loadImage(video);
-  image(video, 0, 0 ); // draw the video - we will remove this after testing
+  //image(video, 0, 0 ); // draw the video - we will remove this after testing
   //noFill();
   //stroke(0, 255, 0);
   //strokeWeight(3);
@@ -60,15 +60,15 @@ void draw() {
     println(faces[i].x + "," + faces[i].y);
     //rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
   } // end
-   if (faces.length == 1) {
+   if (faces.length == 2) {
   fill(color(255));
   rect(30, (faces[0].y * 2), 10, 100); // draw
-  //rect(1560, (faces[1].y * 2), 10, 100); // draw
+  rect(720, (faces[1].y * 2), 10, 100); // draw
   paddleLeftPosition = faces[0].y;
-  //paddleRightPosition = faces[1].y;
+  paddleRightPosition = faces[1].y;
   }
   
-  
+    ball.update(); // update pos
   ball.render(); // draw balls :D
     fill(color(255,255,255,125));
   rect(400,0,4,450); // draw middle line
