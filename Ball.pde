@@ -5,6 +5,7 @@ class Ball {
   float r; //Radius.
   boolean fresh; //Whether or not the ball has just been generated.
 
+
   Ball (float xInit, float yInit, float sInit) {
     x = xInit;
     y = yInit;
@@ -79,12 +80,13 @@ class Ball {
       d = 19*PI/10;
     }
   }
+  
   float startDirection() {
-    float i = random((PI/4), (7*PI/4));
-    if (((3*PI/4) < i) && (i < 5*PI/4)) {
+    float z = random((PI/4), (7*PI/4));
+    if (((3*PI/4) < z) && (z < 5*PI/4)) {
       return startDirection();
     } else {
-      return i;
+      return z;
     }
   }
 }
