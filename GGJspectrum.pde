@@ -44,7 +44,7 @@ float faceFoundTextX = 800, faceFoundTextY = 450;
 float countDownY = 400;
 boolean beginGameTimer;
 boolean startingCd;
-int scale = 4;
+int scale = 2;
 
 PImage smaller;
 void setup() {
@@ -91,7 +91,7 @@ void setup() {
 }
 
 void draw() {
-  println(frameRate);
+  //println(frameRate);
 
   
    opencv.loadImage(smaller);
@@ -142,7 +142,7 @@ void draw() {
 
       textFont(titleFont);
       textSize(24);
-     // numPlayers = faces.length;
+      numPlayers = faces.length;
 
       text(numPlayers + " of 2 people found", faceFoundTextX, faceFoundTextY);
       starting = false;
@@ -235,10 +235,10 @@ textSize(64);
       fill(color(255));
       rect(15, (faces[0].y * 2), 10, 100); // draw
       rect(780, (faces[1].y * 2), 10, 100); // draw
-      paddleLeftPosition = faces[0].y;
-      paddleRightPosition = faces[1].y;
-      //println("left paddle position is " + faces[0].y);
-      //println("ball position is " + ball.x , ball.y);
+      paddleLeftPosition = faces[0].y * 2;
+      paddleRightPosition = faces[1].y * 2;
+      println("Right paddle position is " + faces[1].y);
+      println("ball position is " + ball.x , ball.y);
     }
 
     for (int g = 0; g < balls.size(); g++) {
