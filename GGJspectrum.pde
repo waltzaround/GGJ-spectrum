@@ -237,8 +237,8 @@ textSize(64);
       rect(780, (faces[1].y * 2), 10, 100); // draw
       paddleLeftPosition = faces[0].y * 2;
       paddleRightPosition = faces[1].y * 2;
-      println("Right paddle position is " + faces[1].y);
-      println("ball position is " + ball.x , ball.y);
+     // println("Right paddle position is " + faces[1].y);
+     // println("ball position is " + ball.x , ball.y);
     }
 
     for (int g = 0; g < balls.size(); g++) {
@@ -251,9 +251,9 @@ textSize(64);
     rect(400, 0, 4, 450); // draw middle line
 
     //begin text draw stuff
-    textSize(40);
+    textSize(20);
     fill(color(255));
-    text(lScore, 20, 40);
+    text(lScore, 40, 40);
     text(rScore, 760, 40);
     //end text draw stuff
 
@@ -284,11 +284,11 @@ void Score(int i) {
   switch (i) {
   case 0:
     lScore += 1;
-    balls.add(new Ball(400, 300, 10));
+   // balls.add(new Ball(400, 300, 10));
     break;
   case 1:
     rScore += 1;
-    balls.add(new Ball(400, 300, 10));
+    //balls.add(new Ball(400, 300, 10));
     break;
   case 2:
     lScore = 0;
