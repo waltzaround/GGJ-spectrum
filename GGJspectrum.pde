@@ -1,6 +1,10 @@
 import de.looksgood.ani.*;
 import de.looksgood.ani.easing.*;
-
+import ddf.minim.*;
+import gab.opencv.*;
+import processing.video.*;
+import java.awt.*;
+import javax.swing.*;      // Java Swing
 /* 
  SUP DOGE!
  This is a global game jam 2017 game!
@@ -9,11 +13,11 @@ import de.looksgood.ani.easing.*;
  Special thanks to Patrick Tuohy
  */
 
-import gab.opencv.*;
-import processing.video.*;
-import java.awt.*;
-import javax.swing.*;      // Java Swing
 
+Minim minim;
+AudioPlayer musicintro;
+AudioPlayer musicgame;
+AudioPlayer musicend;
 Capture video;
 OpenCV opencv;
 Ball ball;
@@ -52,6 +56,13 @@ void setup() {
   
   frameRate(60);
   
+    // begin audio stuff
+  minim = new Minim(this);
+  musicintro = minim.loadFile("musicintro.mp3");
+  musicgame = minim.loadFile("musicgame.wav");
+  musicend = minim.loadFile("musicend.wav");
+  //end audio stuff
+  
   
  
   
@@ -85,7 +96,13 @@ void setup() {
   //smooth();
   Ani.init(this);
   
-
+  musicintro.loop();
+  musicgame.loop();
+ // musicend.loop();
+  musicintro.mute();
+  musicgame.mute();
+ // musicend.mute();
+  musicend.pause();
  
   
 }
@@ -111,10 +128,21 @@ void draw() {
   } else if (!playerOneFound && !starting) {
     status = 0;
   } 
+  
+  
+  if (rScore >= 20 || lScore >= 20){
+  status = 3;
+  
+}
+
 
 
   switch(status) {
   case 0: 
+    musicintro.unmute();
+    musicgame.mute();
+    musicend.mute();
+    musicend.pause();
     background(0, 0, 0);
     // Title 
     Ani.to(this, 1.0, "titleX", width/2);
@@ -198,6 +226,12 @@ textSize(64);
     break;
 
   case 2:
+  
+  musicintro.mute();
+  musicgame.unmute();
+  //musicend.mute();
+  musicend.pause();
+ 
     background(0, 0, 0);
 
     if ((!playerOneFound || !playerTwoFound) && starting) {
@@ -270,6 +304,30 @@ textSize(64);
 
 
     break;
+    
+    case 3: 
+    background(0,0,0);
+    text("Game over", width/2, height/2);
+
+      musicintro.mute();
+  musicgame.unmute();
+  
+  if (!musicend.isPlaying()){
+   musicend.unmute();
+   musicend.rewind();
+ //  musicend.play(1);
+  }
+  
+
+    
+ 
+    textSize(20);
+    fill(color(255));
+    text(lScore, ((width/2) -40), ((height/2) + 60));
+    text(rScore, ((width/2) +40), ((height/2) + 60));
+    
+    
+    break;
   }
 }
 
@@ -312,8 +370,9 @@ void captureEvent(Capture c) {
   
 }
 
-void mouseClicked() {
-  println("mouse: " + mouseX, mouseY);
-    playerOneFound = true;
-  playerTwoFound = true;
-}
+//void mouseClicked() {
+//  println("mouse: " + mouseX, mouseY);
+//    playerOneFound = true;
+//  playerTwoFound = true;
+//  lScore = 20;
+//}
