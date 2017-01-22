@@ -1,6 +1,8 @@
 import de.looksgood.ani.*;
 import de.looksgood.ani.easing.*;
-
+import gab.opencv.*;
+import processing.video.*;
+import java.awt.*;
 /* 
  SUP DOGE!
  This is a global game jam 2017 game!
@@ -9,9 +11,7 @@ import de.looksgood.ani.easing.*;
  Special thanks to Patrick Tuohy
  */
 
-import gab.opencv.*;
-import processing.video.*;
-import java.awt.*;
+
 
 Capture video;
 OpenCV opencv;
@@ -50,8 +50,8 @@ boolean startingCd;
 void setup() {
   size(1600, 900);
   // begin video stuff and
-  video = new Capture(this, 800/2, 600/2);
-  opencv = new OpenCV(this, 800/2, 600/2);
+  video = new Capture(this, 640/2, 480/2);
+  opencv = new OpenCV(this, 640/2, 480/2);
   opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE);  
   video.start();
   // end video stuff
