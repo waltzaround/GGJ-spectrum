@@ -1,6 +1,10 @@
 import de.looksgood.ani.*;
 import de.looksgood.ani.easing.*;
-
+import ddf.minim.*;
+import gab.opencv.*;
+import processing.video.*;
+import java.awt.*;
+import javax.swing.*;      // Java Swing
 /* 
  SUP DOGE!
  This is a global game jam 2017 game!
@@ -9,11 +13,11 @@ import de.looksgood.ani.easing.*;
  Special thanks to Patrick Tuohy
  */
 
-import gab.opencv.*;
-import processing.video.*;
-import java.awt.*;
-import javax.swing.*;      // Java Swing
 
+Minim minim;
+AudioPlayer musicintro;
+AudioPlayer musicgame;
+AudioPlayer musicend;
 Capture video;
 OpenCV opencv;
 Ball ball;
@@ -52,6 +56,13 @@ void setup() {
   
   frameRate(60);
   
+    // begin audio stuff
+  minim = new Minim(this);
+  musicintro = minim.loadFile("musicintro.mp3");
+  musicgame = minim.loadFile("musicgame.mp3");
+  musicend = minim.loadFile("musicend.mp3");
+  //end audio stuff
+  
   
  
   
@@ -85,7 +96,12 @@ void setup() {
   //smooth();
   Ani.init(this);
   
-
+  musicintro.loop();
+  musicgame.loop();
+  musicend.loop();
+  musicintro.mute();
+  musicgame.mute();
+  musicend.mute();
  
   
 }
@@ -115,6 +131,9 @@ void draw() {
 
   switch(status) {
   case 0: 
+    musicintro.unmute();
+    musicgame.mute();
+    musicend.mute();
     background(0, 0, 0);
     // Title 
     Ani.to(this, 1.0, "titleX", width/2);
@@ -198,6 +217,11 @@ textSize(64);
     break;
 
   case 2:
+  
+  musicintro.mute();
+  musicgame.unmute();
+  musicend.mute();
+ 
     background(0, 0, 0);
 
     if ((!playerOneFound || !playerTwoFound) && starting) {
