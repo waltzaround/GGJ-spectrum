@@ -60,7 +60,7 @@ class Ball {
       d = PI - d;
     } else {
       d = 2*PI - d;
-      s += 0.1;
+      s += 0.5;
     }
   }
   void Angle(int i) {

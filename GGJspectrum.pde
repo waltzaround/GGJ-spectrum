@@ -59,8 +59,8 @@ void setup() {
     // begin audio stuff
   minim = new Minim(this);
   musicintro = minim.loadFile("musicintro.mp3");
-  musicgame = minim.loadFile("musicgame.mp3");
-  musicend = minim.loadFile("musicend.mp3");
+  musicgame = minim.loadFile("musicgame.wav");
+  musicend = minim.loadFile("musicend.wav");
   //end audio stuff
   
   
@@ -98,10 +98,11 @@ void setup() {
   
   musicintro.loop();
   musicgame.loop();
-  musicend.loop();
+ // musicend.loop();
   musicintro.mute();
   musicgame.mute();
-  musicend.mute();
+ // musicend.mute();
+  musicend.pause();
  
   
 }
@@ -127,6 +128,13 @@ void draw() {
   } else if (!playerOneFound && !starting) {
     status = 0;
   } 
+  
+  
+  if (rScore >= 20 || lScore >= 20){
+  status = 3;
+  
+}
+
 
 
   switch(status) {
@@ -134,6 +142,7 @@ void draw() {
     musicintro.unmute();
     musicgame.mute();
     musicend.mute();
+    musicend.pause();
     background(0, 0, 0);
     // Title 
     Ani.to(this, 1.0, "titleX", width/2);
@@ -220,7 +229,8 @@ textSize(64);
   
   musicintro.mute();
   musicgame.unmute();
-  musicend.mute();
+  //musicend.mute();
+  musicend.pause();
  
     background(0, 0, 0);
 
@@ -294,6 +304,30 @@ textSize(64);
 
 
     break;
+    
+    case 3: 
+    background(0,0,0);
+    text("Game over", width/2, height/2);
+
+      musicintro.mute();
+  musicgame.unmute();
+  
+  if (!musicend.isPlaying()){
+   musicend.unmute();
+   musicend.rewind();
+ //  musicend.play(1);
+  }
+  
+
+    
+ 
+    textSize(20);
+    fill(color(255));
+    text(lScore, ((width/2) -40), ((height/2) + 60));
+    text(rScore, ((width/2) +40), ((height/2) + 60));
+    
+    
+    break;
   }
 }
 
@@ -336,8 +370,9 @@ void captureEvent(Capture c) {
   
 }
 
-void mouseClicked() {
-  println("mouse: " + mouseX, mouseY);
-    playerOneFound = true;
-  playerTwoFound = true;
-}
+//void mouseClicked() {
+//  println("mouse: " + mouseX, mouseY);
+//    playerOneFound = true;
+//  playerTwoFound = true;
+//  lScore = 20;
+//}
