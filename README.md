@@ -1,5 +1,6 @@
-# GGJ-spectrum
-Mad webcam haxxery
+# Pong Dance
 
-Sup reader.
-This is just a readme filefor the game. Why are you reasing me??, lets play!
+Built as part of the 2017 Global Game Jam
+Pong dance is a version of pong where you control the paddles by bobbing your head up and down.
+
+Enjoy!
