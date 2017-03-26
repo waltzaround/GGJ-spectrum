@@ -50,8 +50,38 @@ boolean beginGameTimer;
 boolean startingCd;
 int scale = 2;
 
+
+
+// Game Variables
+float x = 150;
+float y = 150;
+float speedX = random(3, 5);
+float speedY = random(3, 5);
+int leftColor = 128;
+int rightColor = 128;
+int diam;
+int rectSize = 150;
+float diamHit;
+boolean gameStart = true;
+
+
+
 PImage smaller;
 void setup() {
+  
+  // Game stuff
+    diam = 20;
+  ellipse(x, y, diam, diam);
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
  // size(width, height);
  fullScreen();
   
@@ -109,18 +139,6 @@ void setup() {
 }
 
 void draw() {
-  //println(frameRate);
-
-  
- //  opencv.loadImage(smaller);
- // Rectangle[] faces = opencv.detect();
-  // Detect Players
-  
- // if (faces.length == 2){
- //   playerOneFound = true;
- //   playerTwoFound = true;
-    
- // }
 
   if (playerOneFound && playerTwoFound && !starting) {
     status = 1;
@@ -247,60 +265,63 @@ textSize(64);
 
     ///////////////////////////////GAME CODE///////////////////////////////////
 
-    // begin video processing parts
-    scale(2);
-    rectMode(CENTER);
-    background(0, 0, 0);
-    //opencv.loadImage(video);
-   
-   // image(smaller, 0, 0 ); // draw the video - we will remove this after testing
-    //noFill();
-    //stroke(0, 255, 0);
-    //strokeWeight(3);
-    color(0, 0, 0);
-    
-    //println(faces.length);
+  background(255);
 
-    //for (int i = 0; i < faces.length; i++) { // for every face on screen...
-    //  //  println(faces[i].x + "," + faces[i].y);
-    //  //rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
-    //} // end
-    //if (faces.length == 2) {
-    //  fill(color(255));
-    //  rect(15, (faces[0].y * 2), 10, 100); // draw
-    //  rect(780, (faces[1].y * 2), 10, 100); // draw
-    //  paddleLeftPosition = faces[0].y * 2;
-    //  paddleRightPosition = faces[1].y * 2;
-    // // println("Right paddle position is " + faces[1].y);
-    // // println("ball position is " + ball.x , ball.y);
-    //}
+  fill(128,128,128);
+  diam = 20;
+  ellipse(x, y, diam, diam);
 
-    for (int g = 0; g < balls.size(); g++) {
-      Ball part = balls.get(g);
-      part.update();
-      part.render();
+  fill(leftColor);
+  rect(0, 0, 20, height);
+  fill(rightColor);
+  rect(width-30, mouseY-rectSize/2, 10, rectSize);
+
+
+  if (gameStart) {
+
+    x = x + speedX;
+    y = y + speedY;
+
+    // if ball hits movable bar, invert X direction and apply effects
+    if ( x > width-30 && x < width -20 && y > mouseY-rectSize/2 && y < mouseY+rectSize/2 ) {
+      speedX = (speedX + 1) * -1;
+      x = x + speedX;
+      rightColor = 0;
+      fill(random(0,128),random(0,128),random(0,128));
+      diamHit = random(75,150);
+      ellipse(x,y,diamHit,diamHit);
+      rectSize = rectSize-10;
+      rectSize = constrain(rectSize, 10,150);      
+    } 
+
+    // if ball hits wall, change direction of X
+    else if (x < 25) {
+      speedX = speedX * -1.1;
+      x = x + speedX;
+      leftColor = 0;
     }
 
-    fill(color(255, 255, 255, 125));
-    rect(400, 0, 4, 450); // draw middle line
-
-    //begin text draw stuff
-    textSize(20);
-    fill(color(255));
-    text(lScore, 40, 40);
-    text(rScore, 760, 40);
-    //end text draw stuff
-
-    //begin boost segment
-    if ((0 < boost) && (millis() < boostTimer + 2000)) {
-      //boost
-    } else {
-      boost = 0;
+    else {     
+      leftColor = 128;
+      rightColor = 128;
     }
-    //end boost segment
-    // end void draw
+    // resets things if you lose
+    if (x > width) { 
+    //  gameStart = false;
+      x = 150;
+      y = 150; 
+      speedX = random(3, 5);
+      speedY = random(3, 5);
+      rectSize = 150;
+    }
 
 
+    // if ball hits up or down, change direction of Y   
+    if ( y > height || y < 0 ) {
+      speedY = speedY * -1;
+      y = y + speedY;
+    }
+  }
 
 
     break;
@@ -370,9 +391,9 @@ void captureEvent(Capture c) {
   
 }
 
-//void mouseClicked() {
-//  println("mouse: " + mouseX, mouseY);
-//    playerOneFound = true;
-//  playerTwoFound = true;
-//  lScore = 20;
-//}
+void mouseClicked() {
+  println("mouse: " + mouseX, mouseY);
+    playerOneFound = true;
+  playerTwoFound = true;
+ // lScore = 20;
+}
