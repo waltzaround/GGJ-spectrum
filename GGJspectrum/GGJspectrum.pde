@@ -42,8 +42,8 @@ int waitTime;
 int numPlayers = 0;
 int elapsedTime;
 boolean playerOneFound, playerTwoFound, starting;
-float titleX = width/2, titleY = -100;
-float subX = 800, subY = 1000;
+float titleX = width/2, titleY = 600;
+float subX = width/2, subY = 600;
 float faceFoundTextX = 800, faceFoundTextY = 450;
 float countDownY = 400;
 boolean beginGameTimer;
@@ -52,7 +52,8 @@ int scale = 2;
 
 PImage smaller;
 void setup() {
-  size(1600, 900);
+ // size(width, height);
+ fullScreen();
   
   frameRate(60);
   
@@ -72,18 +73,18 @@ void setup() {
  // video.start();
   // end video stuff
   
-  video = new Capture(this,640, 480);
-  video.start();
+ // video = new Capture(this,640, 480);
+ // video.start();
   
   
-  opencv = new OpenCV(this, video.width/scale, video.height/scale);
+ // opencv = new OpenCV(this, video.width/scale, video.height/scale);
   
   
     // Which "cascade" are we going to use?
-  opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE); 
+ // opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE); 
  
   // Make scaled down image
-  smaller = createImage(opencv.width,opencv.height,RGB);
+ // smaller = createImage(opencv.width,opencv.height,RGB);
   
   
   
@@ -111,15 +112,15 @@ void draw() {
   //println(frameRate);
 
   
-   opencv.loadImage(smaller);
-  Rectangle[] faces = opencv.detect();
+ //  opencv.loadImage(smaller);
+ // Rectangle[] faces = opencv.detect();
   // Detect Players
   
-  if (faces.length == 2){
-    playerOneFound = true;
-    playerTwoFound = true;
+ // if (faces.length == 2){
+ //   playerOneFound = true;
+ //   playerTwoFound = true;
     
-  }
+ // }
 
   if (playerOneFound && playerTwoFound && !starting) {
     status = 1;
@@ -158,7 +159,7 @@ void draw() {
 
     // Subtitle
     if (waitTime > 100) {
-      //Ani.to(this, 1.0, "subX", width/2);
+      Ani.to(this, 1.0, "subX", width/2);
       Ani.to(this, 1.0, "subY", height/1.8);
       textSize(24);
       text("Find a friend and face the screen to get started", subX, subY);
@@ -170,7 +171,7 @@ void draw() {
 
       textFont(titleFont);
       textSize(24);
-      numPlayers = faces.length;
+   //   numPlayers = faces.length;
 
       text(numPlayers + " of 2 people found", faceFoundTextX, faceFoundTextY);
       starting = false;
@@ -181,7 +182,6 @@ void draw() {
     break;
   case 1: 
   
-//numPlayers = faces.length;
     if (beginGameTimer == true) {
       background(0, 0, 0);
       elapsedTime = 0;
@@ -261,19 +261,19 @@ textSize(64);
     
     //println(faces.length);
 
-    for (int i = 0; i < faces.length; i++) { // for every face on screen...
-      //  println(faces[i].x + "," + faces[i].y);
-      //rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
-    } // end
-    if (faces.length == 2) {
-      fill(color(255));
-      rect(15, (faces[0].y * 2), 10, 100); // draw
-      rect(780, (faces[1].y * 2), 10, 100); // draw
-      paddleLeftPosition = faces[0].y * 2;
-      paddleRightPosition = faces[1].y * 2;
-     // println("Right paddle position is " + faces[1].y);
-     // println("ball position is " + ball.x , ball.y);
-    }
+    //for (int i = 0; i < faces.length; i++) { // for every face on screen...
+    //  //  println(faces[i].x + "," + faces[i].y);
+    //  //rect(faces[i].x, faces[i].y, faces[i].width, faces[i].height);
+    //} // end
+    //if (faces.length == 2) {
+    //  fill(color(255));
+    //  rect(15, (faces[0].y * 2), 10, 100); // draw
+    //  rect(780, (faces[1].y * 2), 10, 100); // draw
+    //  paddleLeftPosition = faces[0].y * 2;
+    //  paddleRightPosition = faces[1].y * 2;
+    // // println("Right paddle position is " + faces[1].y);
+    // // println("ball position is " + ball.x , ball.y);
+    //}
 
     for (int g = 0; g < balls.size(); g++) {
       Ball part = balls.get(g);
