@@ -4,13 +4,15 @@ import ddf.minim.*;
 import gab.opencv.*;
 import processing.video.*;
 import java.awt.*;
-import javax.swing.*;      // Java Swing
+import javax.swing.*;
+import KinectPV2.*;
+
+
 /* 
  SUP DOGE!
  This is a global game jam 2017 game!
  More dox coming soon :D
  @authors Walter Lim, Sam Hunt
- Special thanks to Patrick Tuohy
  */
 
 
@@ -19,8 +21,15 @@ AudioPlayer musicintro;
 AudioPlayer musicgame;
 AudioPlayer musicend;
 Capture video;
-OpenCV opencv;
 Ball ball;
+KinectPV2 kinect;
+
+
+boolean foundUsers = false;
+int numPlayersDetected = 0;
+float potato;
+
+
 
 // Variables for game
 int paddleLeftPosition = 300; //Initial Position of left paddle.
@@ -39,9 +48,8 @@ ArrayList<Ball> balls = new ArrayList<Ball>();
 int status = 0;
 PFont titleFont;
 int waitTime;
-int numPlayers = 0;
 int elapsedTime;
-boolean playerOneFound, playerTwoFound, starting;
+boolean starting;
 float titleX = width/2, titleY = 600;
 float subX = width/2, subY = 600;
 float faceFoundTextX = 800, faceFoundTextY = 450;
@@ -68,56 +76,41 @@ boolean gameStart = true;
 
 PImage smaller;
 void setup() {
-  
+
+
+  // Kinect stuffs
+  kinect = new KinectPV2(this);
+
+  kinect.enableBodyTrackImg(true);
+  kinect.enableDepthMaskImg(true);
+  kinect.enableSkeletonDepthMap(true);
+
+  kinect.init();
+
   // Game stuff
-    diam = 20;
+  diam = 20;
   ellipse(x, y, diam, diam);
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
- // size(width, height);
- fullScreen();
-  
+
+
+
+
+
+
+
+
+
+  // size(width, height);
+  fullScreen();
+
   frameRate(60);
-  
-    // begin audio stuff
+
+  // begin audio stuff
   minim = new Minim(this);
   musicintro = minim.loadFile("musicintro.mp3");
   musicgame = minim.loadFile("musicgame.wav");
   musicend = minim.loadFile("musicend.wav");
   //end audio stuff
-  
-  
- 
-  
-  // begin video stuff and
- // video = new Capture(this, 800, 600);
-
- // video.start();
-  // end video stuff
-  
- // video = new Capture(this,640, 480);
- // video.start();
-  
-  
- // opencv = new OpenCV(this, video.width/scale, video.height/scale);
-  
-  
-    // Which "cascade" are we going to use?
- // opencv.loadCascade(OpenCV.CASCADE_FRONTALFACE); 
- 
-  // Make scaled down image
- // smaller = createImage(opencv.width,opencv.height,RGB);
-  
-  
-  
 
   //begin game initialization and other crap - SPAWN THE BALLS!!
   balls.add(new Ball(400, 300, 10));
@@ -126,33 +119,71 @@ void setup() {
   titleFont = createFont("pixelated.ttf", 64);
   //smooth();
   Ani.init(this);
-  
+
   musicintro.loop();
   musicgame.loop();
- // musicend.loop();
+  // musicend.loop();
   musicintro.mute();
   musicgame.mute();
- // musicend.mute();
+  // musicend.mute();
   musicend.pause();
- 
-  
 }
 
 void draw() {
 
-  if (playerOneFound && playerTwoFound && !starting) {
+
+
+  // Kinect tracking
+
+  //get the skeletons as an Arraylist of KSkeletons
+  ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonDepthMap();
+
+  //obtain an ArrayList of the users currently being tracked
+  ArrayList<PImage> bodyTrackList = kinect.getBodyTrackUser();
+
+  //iterate through all the users
+  for (int i = 0; i < bodyTrackList.size(); i++) {
+    PImage bodyTrackImg = (PImage)bodyTrackList.get(i);
+    if (i <= 2)
+      image(bodyTrackImg, 320 + 240*i, 0, 320, 240);
+    else
+      image(bodyTrackImg, 320 + 240*(i - 3), 424, 320, 240 );
+  }
+  numPlayersDetected = kinect.getNumOfUsers();
+
+  for (int i = 0; i < skeletonArray.size(); i++) {
+    KSkeleton skeleton = (KSkeleton) skeletonArray.get(i);
+    //if the skeleton is being tracked compute the skleton joints
+    if (skeleton.isTracked()) {
+      KJoint[] joints = skeleton.getJoints();
+
+      color col  = skeleton.getIndexColor();
+      fill(col);
+      stroke(col);
+
+      drawBody(joints);
+      drawHandState(joints[KinectPV2.JointType_HandRight]);
+      drawHandState(joints[KinectPV2.JointType_HandLeft]);
+      potato = (joints[KinectPV2.JointType_Head].getY()); // change between X and Y to change dimension that user has to traverse - Z isnt implemented in this libarary but we could use grayscale to figure that out
+    }
+  }
+  
+
+  
+
+
+  if (numPlayersDetected == 2 && !starting) {
     status = 1;
-  } else if (playerOneFound && playerTwoFound && starting) {
+  } else if (numPlayersDetected == 2 && starting) {
     status = 2;
-  } else if (!playerOneFound && !starting) {
+  } else if (numPlayersDetected <=1 && !starting) {
     status = 0;
   } 
-  
-  
-  if (rScore >= 20 || lScore >= 20){
-  status = 3;
-  
-}
+
+
+  if (rScore >= 20 || lScore >= 20) {
+    status = 3;
+  }
 
 
 
@@ -171,7 +202,7 @@ void draw() {
     textAlign(CENTER, CENTER);
     text("Welcome.", titleX, titleY);
 
- 
+
 
     waitTime++;
 
@@ -184,14 +215,14 @@ void draw() {
 
 
       Ani.to(this, 1.0, "faceFoundTextX", width/2);
-      Ani.to(this, 1.0, "faceFoundTextY", 800);
+      Ani.to(this, 1.0, "faceFoundTextY", height/1.5);
       textAlign(CENTER, CENTER);
 
       textFont(titleFont);
       textSize(24);
-   //   numPlayers = faces.length;
+      //   numPlayers = faces.length;
 
-      text(numPlayers + " of 2 people found", faceFoundTextX, faceFoundTextY);
+      text(numPlayersDetected + " of 2 people found", faceFoundTextX, faceFoundTextY);
       starting = false;
       beginGameTimer = true;
     }
@@ -199,28 +230,26 @@ void draw() {
 
     break;
   case 1: 
-  
+
     if (beginGameTimer == true) {
       background(0, 0, 0);
       elapsedTime = 0;
-     
     }
     beginGameTimer = false;
     // countdown from 3.. 2.. 1..
 
     elapsedTime++;
 
-if (elapsedTime < 100){
-  textSize(64);
-  text("Get Ready!", width/2, height/2);
-  textSize(24);
-  text("Move your head to control the paddle", width/2, height/2 - 200);
-  
-}
+    if (elapsedTime < 100) {
+      textSize(64);
+      text("Get Ready!", width/2, height/2);
+      textSize(24);
+      text("Move your head to control the paddle", width/2, height/2 - 200);
+    }
     if (elapsedTime == 100) {
       background(0, 0, 0);
       textSize(32);
-textSize(64);
+      textSize(64);
       text("3", width/2, height/2);
       textSize(24);
       text("Move your head to control the paddle", width/2, height/2 - 200);
@@ -245,14 +274,20 @@ textSize(64);
 
   case 2:
   
-  musicintro.mute();
-  musicgame.unmute();
-  //musicend.mute();
-  musicend.pause();
- 
+//  if(skeletonArray.size() == 1) {
+   
+//    skeletonArray.size(1).
+    
+ // }
+
+    musicintro.mute();
+    musicgame.unmute();
+    //musicend.mute();
+    musicend.pause();
+
     background(0, 0, 0);
 
-    if ((!playerOneFound || !playerTwoFound) && starting) {
+    if ((numPlayersDetected < 2) && starting) {
       textSize(20);
       textAlign(CENTER, CENTER);
       text("Player Lost. Reposition on screen", width/2, height/2 - 200);
@@ -265,92 +300,91 @@ textSize(64);
 
     ///////////////////////////////GAME CODE///////////////////////////////////
 
-  background(255);
+    background(255);
 
-  fill(128,128,128);
-  diam = 20;
-  ellipse(x, y, diam, diam);
+    fill(128, 128, 128);
+    diam = 20;
+    ellipse(x, y, diam, diam);
 
-  fill(leftColor);
-  rect(0, 0, 20, height);
-  fill(rightColor);
-  rect(width-30, mouseY-rectSize/2, 10, rectSize);
+    fill(leftColor);
+    rect(0, 0, 20, height);
+    fill(rightColor);
+    rect(width-30, mouseY-rectSize/2, 10, rectSize);
 
 
-  if (gameStart) {
+    if (gameStart) {
 
-    x = x + speedX;
-    y = y + speedY;
-
-    // if ball hits movable bar, invert X direction and apply effects
-    if ( x > width-30 && x < width -20 && y > mouseY-rectSize/2 && y < mouseY+rectSize/2 ) {
-      speedX = (speedX + 1) * -1;
       x = x + speedX;
-      rightColor = 0;
-      fill(random(0,128),random(0,128),random(0,128));
-      diamHit = random(75,150);
-      ellipse(x,y,diamHit,diamHit);
-      rectSize = rectSize-10;
-      rectSize = constrain(rectSize, 10,150);      
-    } 
-
-    // if ball hits wall, change direction of X
-    else if (x < 25) {
-      speedX = speedX * -1.1;
-      x = x + speedX;
-      leftColor = 0;
-    }
-
-    else {     
-      leftColor = 128;
-      rightColor = 128;
-    }
-    // resets things if you lose
-    if (x > width) { 
-    //  gameStart = false;
-      x = 150;
-      y = 150; 
-      speedX = random(3, 5);
-      speedY = random(3, 5);
-      rectSize = 150;
-    }
-
-
-    // if ball hits up or down, change direction of Y   
-    if ( y > height || y < 0 ) {
-      speedY = speedY * -1;
       y = y + speedY;
+
+      // if ball hits movable bar, invert X direction and apply effects
+      if ( x > width-30 && x < width -20 && y > mouseY-rectSize/2 && y < mouseY+rectSize/2 ) {
+        speedX = (speedX + 1) * -1;
+        x = x + speedX;
+        rightColor = 0;
+        fill(random(0, 128), random(0, 128), random(0, 128));
+        diamHit = random(75, 150);
+        ellipse(x, y, diamHit, diamHit);
+        rectSize = rectSize-10;
+        rectSize = constrain(rectSize, 10, 150);
+      } 
+
+      // if ball hits wall, change direction of X
+      else if (x < 25) {
+        speedX = speedX * -1.1;
+        x = x + speedX;
+        leftColor = 0;
+      } else {     
+        leftColor = 128;
+        rightColor = 128;
+      }
+      // resets things if you lose
+      if (x > width) { 
+        //  gameStart = false;
+        x = 150;
+        y = 150; 
+        speedX = random(3, 5);
+        speedY = random(3, 5);
+        rectSize = 150;
+      }
+
+
+      // if ball hits up or down, change direction of Y   
+      if ( y > height || y < 0 ) {
+        speedY = speedY * -1;
+        y = y + speedY;
+      }
     }
-  }
 
 
     break;
-    
-    case 3: 
-    background(0,0,0);
+
+  case 3: 
+    background(0, 0, 0);
     text("Game over", width/2, height/2);
 
-      musicintro.mute();
-  musicgame.unmute();
-  
-  if (!musicend.isPlaying()){
-   musicend.unmute();
-   musicend.rewind();
- //  musicend.play(1);
-  }
-  
+    musicintro.mute();
+    musicgame.unmute();
 
-    
- 
+    if (!musicend.isPlaying()) {
+      musicend.unmute();
+      musicend.rewind();
+      //  musicend.play(1);
+    }
+
+
+
+
     textSize(20);
     fill(color(255));
     text(lScore, ((width/2) -40), ((height/2) + 60));
     text(rScore, ((width/2) +40), ((height/2) + 60));
-    
-    
+
+
     break;
   }
 }
+
 
 
 
@@ -363,7 +397,7 @@ void Score(int i) {
   switch (i) {
   case 0:
     lScore += 1;
-   // balls.add(new Ball(400, 300, 10));
+    // balls.add(new Ball(400, 300, 10));
     break;
   case 1:
     rScore += 1;
@@ -385,15 +419,103 @@ void Score(int i) {
 
 void captureEvent(Capture c) {
   video.read();
-    // Make smaller image
-  smaller.copy(video,0,0,video.width,video.height,0,0,smaller.width,smaller.height);
+  // Make smaller image
+  smaller.copy(video, 0, 0, video.width, video.height, 0, 0, smaller.width, smaller.height);
   smaller.updatePixels();
-  
 }
 
 void mouseClicked() {
   println("mouse: " + mouseX, mouseY);
-    playerOneFound = true;
-  playerTwoFound = true;
- // lScore = 20;
+
+  // lScore = 20;
+}
+
+void drawHandState(KJoint joint) {
+  noStroke();
+  handState(joint.getState());
+  pushMatrix();
+  translate(joint.getX(), joint.getY(), joint.getZ());
+  ellipse(0, 0, 70, 70);
+  popMatrix();
+}
+
+void handState(int handState) {
+  switch(handState) {
+  case KinectPV2.HandState_Open:
+    fill(0, 255, 0);
+    break;
+  case KinectPV2.HandState_Closed:
+    fill(255, 0, 0);
+    break;
+  case KinectPV2.HandState_Lasso:
+    fill(0, 0, 255);
+    break;
+  case KinectPV2.HandState_NotTracked:
+    fill(100, 100, 100);
+    break;
+  }
+}
+
+
+//draw the body
+void drawBody(KJoint[] joints) {
+  drawBone(joints, KinectPV2.JointType_Head, KinectPV2.JointType_Neck);
+  drawBone(joints, KinectPV2.JointType_Neck, KinectPV2.JointType_SpineShoulder);
+  drawBone(joints, KinectPV2.JointType_SpineShoulder, KinectPV2.JointType_SpineMid);
+  drawBone(joints, KinectPV2.JointType_SpineMid, KinectPV2.JointType_SpineBase);
+  drawBone(joints, KinectPV2.JointType_SpineShoulder, KinectPV2.JointType_ShoulderRight);
+  drawBone(joints, KinectPV2.JointType_SpineShoulder, KinectPV2.JointType_ShoulderLeft);
+  drawBone(joints, KinectPV2.JointType_SpineBase, KinectPV2.JointType_HipRight);
+  drawBone(joints, KinectPV2.JointType_SpineBase, KinectPV2.JointType_HipLeft);
+
+  // Right Arm
+  drawBone(joints, KinectPV2.JointType_ShoulderRight, KinectPV2.JointType_ElbowRight);
+  drawBone(joints, KinectPV2.JointType_ElbowRight, KinectPV2.JointType_WristRight);
+  drawBone(joints, KinectPV2.JointType_WristRight, KinectPV2.JointType_HandRight);
+  drawBone(joints, KinectPV2.JointType_HandRight, KinectPV2.JointType_HandTipRight);
+  drawBone(joints, KinectPV2.JointType_WristRight, KinectPV2.JointType_ThumbRight);
+
+  // Left Arm
+  drawBone(joints, KinectPV2.JointType_ShoulderLeft, KinectPV2.JointType_ElbowLeft);
+  drawBone(joints, KinectPV2.JointType_ElbowLeft, KinectPV2.JointType_WristLeft);
+  drawBone(joints, KinectPV2.JointType_WristLeft, KinectPV2.JointType_HandLeft);
+  drawBone(joints, KinectPV2.JointType_HandLeft, KinectPV2.JointType_HandTipLeft);
+  drawBone(joints, KinectPV2.JointType_WristLeft, KinectPV2.JointType_ThumbLeft);
+
+  // Right Leg
+  drawBone(joints, KinectPV2.JointType_HipRight, KinectPV2.JointType_KneeRight);
+  drawBone(joints, KinectPV2.JointType_KneeRight, KinectPV2.JointType_AnkleRight);
+  drawBone(joints, KinectPV2.JointType_AnkleRight, KinectPV2.JointType_FootRight);
+
+  // Left Leg
+  drawBone(joints, KinectPV2.JointType_HipLeft, KinectPV2.JointType_KneeLeft);
+  drawBone(joints, KinectPV2.JointType_KneeLeft, KinectPV2.JointType_AnkleLeft);
+  drawBone(joints, KinectPV2.JointType_AnkleLeft, KinectPV2.JointType_FootLeft);
+
+  //Single joints
+  drawJoint(joints, KinectPV2.JointType_HandTipLeft);
+  drawJoint(joints, KinectPV2.JointType_HandTipRight);
+  drawJoint(joints, KinectPV2.JointType_FootLeft);
+  drawJoint(joints, KinectPV2.JointType_FootRight);
+
+  drawJoint(joints, KinectPV2.JointType_ThumbLeft);
+  drawJoint(joints, KinectPV2.JointType_ThumbRight);
+
+  drawJoint(joints, KinectPV2.JointType_Head);
+}
+
+void drawJoint(KJoint[] joints, int jointType) {
+  pushMatrix();
+  translate(joints[jointType].getX(), joints[jointType].getY(), joints[jointType].getZ());
+  ellipse(0, 0, 25, 25);
+  popMatrix();
+}
+
+//draw a bone from two joints
+void drawBone(KJoint[] joints, int jointType1, int jointType2) {
+  pushMatrix();
+  translate(joints[jointType1].getX(), joints[jointType1].getY(), joints[jointType1].getZ());
+  ellipse(0, 0, 25, 25);
+  popMatrix();
+  line(joints[jointType1].getX(), joints[jointType1].getY(), joints[jointType1].getZ(), joints[jointType2].getX(), joints[jointType2].getY(), joints[jointType2].getZ());
 }
